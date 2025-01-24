@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-geoman-free@2.14.0/dist/leaflet-geoman.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -88,26 +89,31 @@
             border-bottom: 2px solid #ddd;
             margin-bottom: 5px;
             margin-top: 20px;
-            width: 100%;
+            width: 92%;
+            max-width: 600px;
             box-sizing: border-box;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .tab-button {
+            border-radius: 5px;
             flex: 1;
             padding: 10px;
             text-align: center;
             background: #f4f4f4;
             border: none;
-            cursor: pointer;
             transition: background-color 0.3s;
             box-sizing: border-box;
         }
 
         .tab-button.active {
-            background: #3dac1495;
+            background: linear-gradient(135deg, rgba(61, 172, 20, 0.95), rgba(34, 112, 10, 0.9));
             font-weight: bold;
             box-sizing: border-box;
+            color: white;
         }
+
 
         .tab-content {
             padding: 10px;
@@ -449,8 +455,7 @@
     <div id="sidebar">
         {{-- tab navigation --}}
         <div class="tabs">
-            <button class="tab-button active" data-tab="menu-tab">Daftar OPD</button>
-            {{-- <button class="tab-button" data-tab="graph-tab">Grafik</button> --}}
+            <button class="tab-button active" data-tab="menu-tab"><i class="bi bi-folder2"></i> Daftar OPD</button>
         </div>
 
         <!-- Tab Content -->
@@ -458,20 +463,6 @@
             <input type="text" id="search-menu" placeholder="Pencarian ..."
                 style="font-family: 'Poppins', sans-serif; width: 100%; padding: 10px; margin-top: 10px; margin-bottom: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
             <div id="folder-container"></div>
-
-            <!-- Grafik Tab -->
-            {{-- <div id="graph-tab" class="tab-pane">
-                <div class="menu-header" onclick="toggleMenu('graph-bpkad')">
-                    BPKAD <i class="fas fa-chevron-down"></i>
-                </div>
-                <div id="graph-bpkad" class="menu-content">
-                    <button onclick="showPopup('iframe-bpkad')">Lihat Grafik</button>
-                </div>
-
-                <div id="overlay"
-                    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:1000;"
-                    onclick="closePopup()"></div>
-            </div> --}}
         </div>
     </div>
 
