@@ -1,0 +1,27 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "kecamatan": "Bandar KM",
+                "padi": {
+                    "luas_tanam": 0,
+                    "luas_panen": 20,
+                    "produksi": 148,
+                    "produktivitas": 7.38
+                },
+                "jagung": {
+                    "luas_tanam": 0,
+                    "luas_panen": 0,
+                    "produksi": 0,
+                    "produktivitas": 7.09
+                }
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-7.544149862809839, 112.15085292840631]            }
+        }
+    ]
+}
+

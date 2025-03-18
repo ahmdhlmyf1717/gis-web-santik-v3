@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="icon" href="{{ asset('assets/logo/kabupaten.png') }}" type="image/png">
 
-
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-geoman-free@2.14.0/dist/leaflet-geoman.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -33,11 +35,9 @@
             z-index: 0;
         }
 
-
-
         #sidebar {
             position: absolute;
-            left: 0px;
+            left: 0;
             right: 5px;
             top: 8px;
             bottom: 8px;
@@ -51,7 +51,7 @@
             box-sizing: border-box;
             padding: 60px 20px 10px;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            border-right: 2px solid #e5e7eb82;
+            border-right: 2px solid rgba(229, 231, 235, 0.5);
             border-radius: 15px;
         }
 
@@ -59,6 +59,24 @@
             transform: translateX(0);
             opacity: 1;
         }
+
+        #sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
 
         #hamburger {
             position: fixed;
@@ -127,8 +145,6 @@
         .tab-button:not(.active):hover {
             background: rgba(61, 172, 20, 0.1);
         }
-
-
 
         .tab-content {
             padding: 10px;
@@ -217,7 +233,6 @@
             border-radius: 15px;
         }
 
-
         .topbar-container {
             width: 100%;
             max-width: 1200px;
@@ -283,8 +298,6 @@
             transform: scale(1.1);
         }
 
-
-
         .popup-table {
             border-collapse: collapse;
             width: 100%;
@@ -312,7 +325,7 @@
         .legend {
             position: absolute;
             top: 80px;
-            right: 10px;
+            right: 70px;
             background: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border-radius: 5px;
@@ -324,7 +337,6 @@
             width: 250px;
             overflow: visible;
         }
-
 
         .legend h4 {
             margin: 0;
@@ -350,7 +362,6 @@
             margin-right: 10px;
             border-radius: 3px;
         }
-
 
         #topbar .logo-title,
         .tab-button,
@@ -446,6 +457,70 @@
         .folder-details summary:hover {
             color: #6ada36;
         }
+
+        .opacity-slider {
+            width: 100%;
+            margin-top: 5px;
+            appearance: none;
+            height: 6px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .15s ease-in-out;
+            border-radius: 5px;
+        }
+
+        .opacity-slider:hover {
+            opacity: 1;
+        }
+
+        .opacity-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .opacity-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+
+
+        .layer-control {
+            margin-bottom: 10px;
+        }
+
+        .custom-swal-popup {
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(34, 193, 195, 0.8), rgba(0, 212, 255, 0.8));
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            max-width: 400px;
+        }
+
+        .custom-swal-title {
+            font-family: "Poppins", sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #185109;
+        }
+
+        .custom-swal-text {
+            font-family: "Poppins", sans-serif;
+            font-size: 15px;
+            text-align: justify;
+            color: #185109;
+        }
     </style>
 </head>
 
@@ -470,8 +545,9 @@
     <div id="sidebar">
         {{-- tab navigation --}}
         <div class="tabs">
-            <button class="tab-button active" data-tab="menu-tab"><i class="bi bi-folder2"></i> Daftar OPD</button>
+            <button class="tab-button active" data-tab="menu-tab"><i class="bi bi-folder2"></i> Daftar Layer</button>
         </div>
+
 
         <!-- Tab Content -->
         <div class="tab-content">
@@ -489,22 +565,50 @@
         <div id="iframe-container" style="margin-top:10px;"></div>
     </div>
 
-    <script>
-        function showPopup(iframeId) {
-            const iframeContent = {
-                'iframe-bpkad': '<iframe width="100%" height="400" seamless frameborder="0" scrolling="yes" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSv4fcd29BLBBvk8A7aWa-mJiW-NH1gW-RVAyIubJ1fvuKdWLv-LjqPpzgbdwaSDzuRnlFqx8vRc4Ug/pubchart?oid=2123918905&amp;format=interactive"></iframe><p>Sumber : Badan Pengelolaan Keuangan dan Aset Daerah</p>'
-            };
-            document.getElementById('iframe-container').innerHTML = iframeContent[iframeId] || '';
-            document.getElementById('iframe-popup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+    <button id="resetViewButton" class="reset-btn">
+        <i class="fas fa-dove"></i>
+    </button>
 
-        function closePopup() {
-            document.getElementById('iframe-popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('iframe-container').innerHTML = '';
-        }
+
+    @include('resetview')
+    <script>
+        // Koordinat default
+        const defaultCenter = [-7.55555589792736, 112.22681069495013];
+        const defaultZoom = 10;
+
+        // Event untuk reset view
+        document.getElementById('resetViewButton').addEventListener('click', function() {
+            map.setView([-7.55555589792736, 112.22681069495013], 10);
+        });
     </script>
+
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                title: "<h2 class='custom-swal-title'>Selamat Datang di WebGIS Jombang!</h2>",
+                html: "<p class='custom-swal-text'>WebGIS Kabupaten Jombang siap digunakan. Silakan gunakan menu di kiri untuk navigasi dan jelajahi informasi geospasial yang tersedia.",
+
+                toast: true,
+                position: "centre",
+                background: "transparent",
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: "custom-swal-popup",
+                    title: "custom-swal-title",
+                    htmlContainer: "custom-swal-text"
+                }
+            });
+        });
+    </script>
+
+
+
+
     <script>
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', function() {
@@ -521,7 +625,6 @@
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-geoman-free@2.14.0/dist/leaflet-geoman.min.js"></script>
-    <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
 
     <script>
         const map = L.map('map', {
@@ -564,6 +667,31 @@
         L.control.layers(baseMaps, null, {
             position: 'bottomright'
         }).addTo(map);
+
+
+        var mataAnginImage = "{{ asset('assets/logo/mata-angin.png') }}";
+
+        // kontrol arah mata angin
+        L.Control.North = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+
+            onAdd: function(map) {
+                var img = L.DomUtil.create('img');
+                img.src = mataAnginImage;
+                img.style.width = '75px';
+                img.style.height = '75px';
+                img.style.background = 'none';
+                img.style.border = 'none';
+                img.style.padding = '0';
+                img.style.boxShadow = 'none';
+
+                return img;
+            }
+        });
+
+        new L.Control.North().addTo(map);
 
         hamburger.addEventListener('click', () => {
             sidebar.classList.toggle('open');
@@ -635,7 +763,7 @@
                 updateVillageLegend(geojsonData);
             } else if (!isVillageBoundary && imagePath) {
                 legendContainer.innerHTML = `
-                <img src="${imagePath}" alt="Legenda" style="max-width: 100%; border: 1px solid #000;">
+                <img src="${imagePath}" alt="Legenda" style="max-width: 100%; solid #000;">
             `;
             } else if (!isVillageBoundary && !imagePath) {
                 legendContainer.innerHTML = "<p>Legenda tidak tersedia</p>";
@@ -655,32 +783,56 @@
                 fetch('/list-files')
                     .then(response => response.json())
                     .then(files => {
+                        console.log("Files loaded:", files);
+
                         files.forEach(file => {
+                            const geojsonPath = `${folderPath}/${file}`;
+                            const imagePath = `${imageFolderPath}/${file.replace(".geojson", ".png")}`;
+
+                            const container = document.createElement("div");
+                            container.classList.add("layer-control");
+
                             const checkbox = document.createElement("input");
                             checkbox.type = "checkbox";
                             checkbox.id = `layer-${file}`;
-                            checkbox.dataset.geojsonPath = `${folderPath}/${file}`;
-                            checkbox.dataset.imagePath =
-                                `${imageFolderPath}/${file.replace(".geojson", ".png")}`;
+                            checkbox.dataset.geojsonPath = geojsonPath;
+                            checkbox.dataset.imagePath = imagePath;
 
                             const label = document.createElement("label");
                             label.htmlFor = checkbox.id;
                             label.textContent = file.replace(".geojson", "");
 
-                            const container = document.createElement("div");
+                            const opacitySlider = document.createElement("input");
+                            opacitySlider.type = "range";
+                            opacitySlider.min = "0";
+                            opacitySlider.max = "1";
+                            opacitySlider.step = "0.1";
+                            opacitySlider.value = "1";
+                            opacitySlider.classList.add("opacity-slider");
+                            opacitySlider.style.display = "none";
+
                             container.appendChild(checkbox);
                             container.appendChild(label);
+                            container.appendChild(opacitySlider);
                             folderContainer.appendChild(container);
 
-                            checkbox.addEventListener("change", event => {
-                                const geojsonPath = event.target.dataset.geojsonPath;
-                                const imagePath = event.target.dataset.imagePath;
+                            console.log("Added layer:", file);
 
+                            checkbox.addEventListener("change", event => {
                                 if (event.target.checked) {
                                     toggleGeoJSONLayer(geojsonPath, imagePath, true);
+                                    opacitySlider.style.display =
+                                        "block";
                                 } else {
                                     toggleGeoJSONLayer(geojsonPath, imagePath, false);
+                                    opacitySlider.style.display =
+                                        "none";
                                 }
+                            });
+
+                            opacitySlider.addEventListener("input", event => {
+                                const opacity = parseFloat(event.target.value);
+                                updateLayerOpacity(geojsonPath, opacity);
                             });
                         });
                     })
@@ -690,11 +842,30 @@
             });
         }
 
+        function updateLayerOpacity(geojsonPath, opacity) {
+            if (geojsonLayers[geojsonPath]) {
+                geojsonLayers[geojsonPath].setStyle({
+                    fillOpacity: opacity,
+                    opacity: opacity
+                });
+            }
+
+            if (markerLayers[geojsonPath]) {
+                markerLayers[geojsonPath].eachLayer(layer => {
+                    if (layer instanceof L.CircleMarker) {
+                        layer.setStyle({
+                            fillOpacity: opacity,
+                            opacity: opacity
+                        });
+                    }
+                });
+            }
+        }
+
         // Fungsi gaya properti
         function styleFeature(feature) {
             const desaName = feature.properties.wadmkd;
             const kecamatanName = feature.properties.kecamatan;
-
             let fillColor;
 
             if (kecamatanData[kecamatanName] !== undefined) {
@@ -718,20 +889,29 @@
 
         // Fungsi konten popup
         function onEachFeature(feature, layer, geojsonPath) {
+            if (!feature.properties) {
+                console.error("Feature properties not found:", feature);
+                return;
+            }
+
             const popupContent = generatePopupContent(feature.properties);
             layer.bindPopup(popupContent);
 
-            const lat = feature.properties.Lintang;
-            const lng = feature.properties.Bujur;
+            const lat = feature.properties?.y;
+            const lng = feature.properties?.x;
+            const opdName = feature.properties?.["Badan OPD"] || "Unknown";
 
-            if (lat !== undefined && lng !== undefined) {
-                const no = feature.properties.No;
-                const percentage = opdDataByNumber[no];
-                const color = percentage ? getColor(percentage) : '#000000';
+            if (lat == null || lng == null) {
+                return;
+            }
 
-                if (!markerLayers[geojsonPath]) {
-                    markerLayers[geojsonPath] = L.layerGroup();
-                }
+            if (!markerLayers[geojsonPath]) {
+                markerLayers[geojsonPath] = L.layerGroup();
+            }
+
+            if (opdName && opdDataByNumber.hasOwnProperty(opdName)) {
+                const percentage = opdDataByNumber[opdName];
+                const color = getColor(percentage);
 
                 const marker = L.circleMarker([lat, lng], {
                     radius: 10,
@@ -742,22 +922,36 @@
                     fillOpacity: 0.8
                 });
 
+                console.log("Adding circle marker with color:", color);
                 marker.bindPopup(popupContent);
                 markerLayers[geojsonPath].addLayer(marker);
+            } else {
+                const defaultMarker = L.circleMarker([lat, lng], {
+                    radius: 8,
+                    color: "#800080",
+                    fillColor: "#800080",
+                    fillOpacity: 0.5,
+                });
+
+                defaultMarker.bindPopup(popupContent);
+                markerLayers[geojsonPath].addLayer(defaultMarker);
             }
         }
 
         function toggleGeoJSONLayer(geojsonPath, imagePath, addLayer = true) {
+            const legendContainer = document.getElementById("legend-container");
 
             if (addLayer) {
-
                 fetch(geojsonPath)
                     .then(response => response.json())
                     .then(data => {
                         if (geojsonLayers[geojsonPath]) {
+                            console.log(`Removing existing geojsonLayer: ${geojsonPath}`);
                             map.removeLayer(geojsonLayers[geojsonPath]);
                         }
+
                         if (markerLayers[geojsonPath]) {
+                            console.log(`Removing existing markerLayer: ${geojsonPath}`);
                             map.removeLayer(markerLayers[geojsonPath]);
                         }
 
@@ -766,11 +960,36 @@
 
                         geojsonLayers[geojsonPath] = L.geoJson(data, {
                             style: styleFeature,
-                            onEachFeature: (feature, layer) => {
-                                const popupContent = generatePopupContent(feature.properties);
-                                layer.bindPopup(popupContent);
+                            pointToLayer: (feature, latlng) => {
+                                return L.circleMarker(latlng, {
+                                    radius: 8,
+                                    fillColor: "#ff7800",
+                                    color: "#000",
+                                    weight: 1,
+                                    opacity: 1,
+                                    fillOpacity: 0.8
+                                });
+                            },
 
-                                onEachFeature(feature, layer, geojsonPath);
+                            onEachFeature: (feature, layer) => {
+                                if (geojsonPath.toLowerCase().includes("persebaran lokasi puskesmas")) {
+                                    const popupContent = generatePopupContent(feature.properties);
+                                    layer.bindPopup(popupContent);
+
+                                    layer.on("click", function() {
+                                        layer.openPopup();
+                                        openDataPanel(feature.properties.nampkm);
+                                    });
+
+                                    // Sembunyikan legenda jika Persebaran Lokasi Puskesmas dipilih
+                                    if (legendContainer) {
+                                        legendContainer.style.display = "none";
+                                    }
+                                }
+
+                                if (typeof onEachFeature === "function") {
+                                    onEachFeature(feature, layer, geojsonPath);
+                                }
                             }
                         }).addTo(map);
 
@@ -786,32 +1005,193 @@
                     })
                     .catch(error => console.error(`Error loading GeoJSON file ${geojsonPath}:`, error));
             } else {
+                console.log(`Removing layers for: ${geojsonPath}`);
+
                 if (geojsonLayers[geojsonPath]) {
                     map.removeLayer(geojsonLayers[geojsonPath]);
                     delete geojsonLayers[geojsonPath];
+                    console.log(`GeoJSON layer removed: ${geojsonPath}`);
                 }
 
                 if (markerLayers[geojsonPath]) {
                     map.removeLayer(markerLayers[geojsonPath]);
                     delete markerLayers[geojsonPath];
+                    console.log(`Marker layer removed: ${geojsonPath}`);
+                }
+
+                // Tampilkan kembali legenda jika layer Persebaran Lokasi Puskesmas dihapus
+                if (geojsonPath.toLowerCase().includes("persebaran lokasi puskesmas") && legendContainer) {
+                    legendContainer.style.display = "block";
                 }
 
                 updateLegendWithImage(null);
             }
         }
 
+
+
+
+
+
         function generatePopupContent(properties) {
-            let content = "<table style='width:100%; border-collapse:collapse;'>";
-            content += "<tbody>";
+            let content = "<table style='width:100%; border-collapse:collapse;'><tbody>";
+
             for (const [key, value] of Object.entries(properties)) {
                 content += `<tr>
-                <td style='border:1px solid #ddd; padding:8px; font-size:12px;'>${key}</td>
-                <td style='border:1px solid #ddd; padding:8px; font-size:12px;'>${value}</td>
-            </tr>`;
+            <td style='border:1px solid #ddd; padding:8px; font-size:12px;'>${key}</td>
+            <td style='border:1px solid #ddd; padding:8px; font-size:12px;'>${value}</td>
+        </tr>`;
             }
+
             content += "</tbody></table>";
+
+            if (properties.nampkm) {
+                content += `<button onclick="openDataPanel('${properties.nampkm}')"
+            style="
+                display: block;
+                margin: 10px 0 0 auto;
+                padding: 6px 12px;
+                background: linear-gradient(90deg, #4CAF50, #66BB6A);
+                color: white;
+                border: none;
+                border-radius: 2px;
+                font-size: 13px;
+                cursor: pointer;
+                transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            "
+            onmouseover="this.style.background='linear-gradient(90deg, #43A047, #5DAE60)'"
+            onmouseout="this.style.background='linear-gradient(90deg, #4CAF50, #66BB6A)'">
+            Lihat Selengkapnya
+        </button>`;
+            }
+
             return content;
         }
+
+
+        let puskesmasChartInstance = null;
+
+        function closePanelOnOutsideClick(event) {
+            const panel = document.getElementById("data-panel");
+            if (panel && !panel.contains(event.target)) {
+                panel.style.display = "none";
+                panel.classList.remove("active");
+                document.removeEventListener("click", closePanelOnOutsideClick);
+            }
+        }
+
+        function openDataPanel(namaPuskesmas) {
+            const panel = document.getElementById("data-panel");
+            const title = document.getElementById("panel-title");
+            const content = document.getElementById("data-content");
+
+            title.innerText = "";
+            content.innerHTML = "";
+
+            fetch(`/api/puskesmas/${encodeURIComponent(namaPuskesmas)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Data tidak ditemukan");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    title.innerText = data.title;
+                    content.innerHTML = "";
+
+                    const chartLabels = [];
+                    const chartData = [];
+                    const chartColors = [];
+
+                    const colors = [
+                        "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
+                        "#FF9F40", "#FFCD56", "#C9CBCF", "#7FC97F", "#D95F02"
+                    ];
+
+                    let colorIndex = 0;
+
+                    for (const [category, values] of Object.entries(data.data)) {
+                        content.innerHTML += `<h4 class="font-medium mt-4">${category}</h4>`;
+
+                        for (const [type, amount] of Object.entries(values)) {
+                            content.innerHTML += `<li>${type}: <strong>${amount}</strong></li>`;
+                            chartLabels.push(`${category} - ${type}`);
+                            chartData.push(amount);
+                            chartColors.push(colors[colorIndex % colors.length]);
+                            colorIndex++;
+                        }
+
+                        content.innerHTML += "</ul>";
+                    }
+
+                    if (puskesmasChartInstance) {
+                        puskesmasChartInstance.destroy();
+                    }
+
+                    const ctx = document.getElementById("puskesmasChart").getContext("2d");
+
+                    puskesmasChartInstance = new Chart(ctx, {
+                        type: "pie",
+                        data: {
+                            labels: chartLabels,
+                            datasets: [{
+                                data: chartData,
+                                backgroundColor: chartColors,
+                                borderColor: "#ffffff",
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: "bottom",
+                                    labels: {
+                                        boxWidth: 8,
+                                        font: {
+                                            size: 8
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            return `${label}: ${context.parsed}`;
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                animateScale: true,
+                                animateRotate: true
+                            }
+                        }
+                    });
+
+                    panel.style.display = "block";
+                    panel.style.right = "10px";
+                    panel.classList.add("active");
+
+                    setTimeout(() => {
+                        document.addEventListener("click", closePanelOnOutsideClick);
+                    }, 100);
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+
+
+
+
+        function closePanel() {
+            const panel = document.getElementById("data-panel");
+            panel.style.display = "none";
+        }
+
+
 
         function loadGeoJSONSidebar(folderPath, imageFolderPath) {
             fetch(`${folderPath}/list-files.php`)
@@ -883,18 +1263,38 @@
             label.htmlFor = `toggle-${fileName}`;
             label.innerText = fileName.replace(".geojson", "");
 
+            const opacitySlider = document.createElement("input");
+            opacitySlider.type = "range";
+            opacitySlider.min = "0";
+            opacitySlider.max = "1";
+            opacitySlider.step = "0.1";
+            opacitySlider.value = "1";
+            opacitySlider.classList.add("opacity-slider");
+            opacitySlider.style.display = "none";
+
+            //  Event listener buat opacity slider
+            opacitySlider.addEventListener("input", event => {
+                const opacity = parseFloat(event.target.value);
+                updateLayerOpacity(geojsonPath, opacity);
+            });
+
             checkbox.addEventListener("change", event => {
                 const geojsonPath = event.target.dataset.geojsonPath;
                 const imagePath = event.target.dataset.imagePath;
+                const isChecked = event.target.checked;
 
-                toggleGeoJSONLayer(geojsonPath, imagePath, event.target.checked);
+                toggleGeoJSONLayer(geojsonPath, imagePath, isChecked);
+
+                //  Munculin/hide slider saat layer diaktifkan/nonaktifkan
+                opacitySlider.style.display = isChecked ? "block" : "none";
             });
 
             container.appendChild(checkbox);
             container.appendChild(label);
-
+            container.appendChild(opacitySlider);
             container.appendChild(document.createElement("br"));
         }
+
 
         function removeLayerFromMap(geojsonPath) {
             if (layers[geojsonPath]) {
@@ -956,37 +1356,37 @@
         };
 
         const opdDataByNumber = {
-            1: 48.91, // BKPSDM
-            2: 94.06, // Bakesbangpol
-            3: 53.15, // BPBD
-            4: 40.65, // Bapenda
-            5: 78.68, // BPKAD
-            6: 52.35, // Bappeda
-            7: 57.55, // Disparpor
-            8: 55.78, // Disdukcapil
-            9: 49.30, // Dinkes
-            10: 50.95, // DKPP
-            11: 38.49, // Diskominfo
-            12: 54.87, // Diskop UKM
-            13: 35.01, // DLH
-            14: 43.82, // DPU PR
-            15: 52.38, // DPMD
-            16: 51.23, // DPMPTSP
-            17: 50.05, // Disdikbud
-            18: 56.47, // DP3AKB
-            19: 54.58, // Dispargin
-            20: 41.22, // Dishub
-            21: 57.38, // Dispusp
-            22: 30.90, // Distan
-            23: 61.37, // Disperink
-            24: 22.50, // Disnaker
-            25: 56.16, // Dinsos
-            26: 57.67, // Inspektorat
-            27: 44.29, // RSUD Jombang
-            28: 47.77, // RSUD Ploso
-            29: 57.67, // Satpol PP
-            30: 55.09, // Setda
-            31: 55.09 // Setwan
+            "Badan Kepegawaian Daerah (BKD)": 48.91,
+            "Badan Kesatuan Bangsa dan Politik (Bakesbangpol)": 94.06,
+            "Badan Penanggulangan Bencana Daerah (BPBD)": 53.15,
+            "Bapenda": 40.65,
+            "Badan Pengelola Keuangan dan Aset Daerah (BPKAD)": 78.68,
+            "Badan Perencanaan Pembangunan Daerah (Bappeda)": 52.35,
+            "Dinas Pariwisata, Kepemudaan, dan Olahraga": 57.55,
+            "Dinas Kependudukan dan Pencatatan Sipil": 55.78,
+            "Dinas Kesehatan": 49.30,
+            "Dinas dan Ketahanan Pangan dan Perikanan": 50.95,
+            "Dinas Komunikasi dan Informatika": 38.49,
+            "Dinas Koperasi dan Usaha Mikro": 54.87,
+            "Dinas Lingkungan Hidup": 35.01,
+            "Dinas Perumahan Rakyat dan Kawasan Permukiman": 43.82,
+            "Dinas Pemberdayaan Masyarakat dan Desa": 52.38,
+            "Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu": 51.23,
+            "Dinas Pendidikan dan Kebudayaan": 50.05,
+            "Dinas Pengendalian Penduduk dan Keluarga Berencana dan Pemberdayaan Perempuan dan Perlindungan Anak": 56.47,
+            "Dinas Perdagangan dan Perindustrian": 54.58,
+            "Dinas Perhubungan": 41.22,
+            "Dinas Perpustakaan dan Kearsipan": 57.38,
+            "Dinas Pertanian": 30.90,
+            "Dinas Peternakan": 61.37,
+            "Dinas Tenaga Kerja": 22.50,
+            "Dinas Sosial": 56.16,
+            "Inspektorat": 57.67,
+            "RSUD Jombang": 44.29,
+            "RSUD Ploso": 47.77,
+            "Satpol PP": 57.67,
+            "Sekretariat Daerah kabupaten jombang": 55.09,
+            "Sekretariat Daerah DPRD": 55.09
         };
 
         function getColor(percentage) {
@@ -1003,8 +1403,412 @@
         <div class="modal-content">
             <h3 id="modalTitle"></h3>
             <div id="modalBody"></div>
+
         </div>
     </div>
-</body>
+
+
+    <div id="data-panel" class="sidebar" style="display: none;">
+        <button onclick="closePanel()"
+            style="position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 16px; cursor: pointer;">×</button>
+        <h2 id="panel-title" class="text-lg font-semibold mb-2">Data Puskesmas</h2>
+        <canvas id="puskesmasChart" style="max-height: 50%;"></canvas>
+        <div id="data-content" class="overflow-y-auto" style="max-height: 45%;"></div>
+    </div>
+
+
+
+    <div id="chart-overlay">
+        <canvas id="pie-chart" style="width: 300px; height: 300px;"></canvas>
+        <button onclick="closeChart()"
+            style="position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 16px; cursor: pointer;">×</button>
+    </div>
+    <canvas id="dataChart" style="display:none; width:400px; height:400px;"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        #icon-sidebar {
+            position: absolute;
+            top: 21%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .sidebar-icon {
+            font-size: 20px;
+            color: #515151;
+            cursor: pointer;
+            padding: 10px;
+            background: white;
+            border-radius: 15%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .sidebar-icon:hover {
+            transform: scale(1.1);
+            color: #45484b;
+        }
+
+        #data-panel {
+            position: fixed;
+            top: 49%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 250px;
+            max-width: 70vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 1000;
+            font-size: 10px;
+        }
+
+        #data-panel h4 {
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 3px;
+        }
+
+        #data-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #data-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #data-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        #data-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        #data-content ul {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #data-content li {
+            padding: 3px 0;
+            font-size: 12px;
+            color: #555;
+        }
+
+        #data-content li strong {
+            font-weight: bold;
+            color: #222;
+        }
+
+
+
+        @media (max-width: 768px) {
+            #data-panel {
+                width: 30%;
+                right: 5%;
+                transform: translateY(-50%);
+            }
+        }
+
+        #chart-overlay {
+            display: none;
+            position: absolute;
+            top: 12%;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .category-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: linear-gradient(135deg, rgba(61, 172, 20, 0.95), rgba(34, 112, 10, 0.9));
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        let myPieChart = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".category-button").forEach(button => {
+                button.addEventListener("click", function() {
+                    const category = this.dataset.category;
+                    const location = this.dataset.location;
+
+                    console.log("Kategori:", category, "Lokasi:", location);
+                    togglePanel(category, location);
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const checkbox = document.getElementById("checkbox");
+
+            if (!checkbox) {
+                console.error("Checkbox tidak ditemukan di DOM!");
+                return;
+            }
+
+            checkbox.addEventListener("change", event => {
+                const geojsonPath = event.target.dataset.geojsonPath;
+                const imagePath = event.target.dataset.imagePath;
+
+                toggleGeoJSONLayer(geojsonPath, imagePath, event.target.checked);
+
+                // sidebar otomatis puskesmas
+                if (fileName.includes("Sebaran Puskesmas")) {
+                    const sidebarIcon = document.querySelector(".bi-hospital");
+
+                    if (event.target.checked) {
+                        if (sidebarIcon) {
+                            sidebarIcon.click();
+                        }
+                    } else {
+                        closeChart();
+                    }
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const detailButton = document.querySelector("#pelajari-btn");
+            const legendContainer = document.querySelector("#legend-container");
+
+            if (detailButton && legendContainer) {
+                detailButton.addEventListener("click", function() {
+                    legendContainer.style.display = "none";
+                });
+            }
+        });
+
+        function togglePanel(category, location = null) {
+            const panel = document.getElementById("data-panel");
+            const title = document.getElementById("panel-title");
+            const content = document.getElementById("data-content");
+
+            if (panel.style.display === "block" && title.innerText === dataSets[category].title) {
+                closePanel();
+                return;
+            }
+
+            title.innerText = dataSets[category].title;
+            content.innerHTML = "";
+
+            if (dataSets[category].locations) {
+                for (const key in dataSets[category].locations) {
+                    let button = document.createElement("button");
+                    button.classList.add("category-button");
+                    button.dataset.category = category;
+                    button.dataset.location = key;
+                    button.innerText = dataSets[category].locations[key].title;
+                    button.onclick = function() {
+                        showPieChart(category, key);
+                    };
+                    content.appendChild(button);
+                }
+            }
+
+            panel.style.right = "10px";
+            panel.style.display = "block";
+            panel.classList.add("active");
+        }
+
+        function showPieChart(category, location) {
+            const chartOverlay = document.getElementById("chart-overlay");
+            const ctx = document.getElementById("pie-chart").getContext("2d");
+
+            if (!dataSets[category].locations[location].data) {
+                console.log("Tidak ada data untuk lokasi:", location);
+                return;
+            }
+
+            // Menggabungkan data ASN & Non ASN dalam satu pie chart
+            let labels = [];
+            let values = [];
+            let colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
+
+            Object.entries(dataSets[category].locations[location].data).forEach(([key, value], index) => {
+                labels.push(`${key} - ASN`);
+                values.push(value["ASN"]);
+                labels.push(`${key} - Non ASN`);
+                values.push(value["Non ASN"]);
+            });
+
+            chartOverlay.style.display = "block";
+
+            if (myPieChart) {
+                myPieChart.destroy();
+            }
+
+            myPieChart = new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0",
+                            "#FF9F40", "#9966FF", "#C9CBCF", "#FF6384"
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: "bottom",
+                            labels: {
+                                font: {
+                                    size: 10
+                                },
+                                boxWidth: 12,
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: dataSets[category].locations[location].title,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            bottom: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        function showLocationData(category, location) {
+            const panel = document.getElementById("data-panel");
+            const title = document.getElementById("panel-title");
+            const content = document.getElementById("data-content");
+
+            let locationData = dataSets[category].locations[location];
+
+            title.innerText = locationData.title;
+            content.innerHTML = "";
+
+            Object.keys(locationData.data).forEach(label => {
+                let subList = document.createElement("ul");
+                subList.innerHTML = `<b>${label}</b>`;
+
+                Object.keys(locationData.data[label]).forEach(subCategory => {
+                    let listItem = document.createElement("li");
+                    let checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.onchange = () => togglePieChart(checkbox, [locationData.data[label][
+                        subCategory
+                    ]], `${label} - ${subCategory}`);
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(document.createTextNode(
+                        ` ${subCategory}: ${locationData.data[label][subCategory]}`));
+                    subList.appendChild(listItem);
+                });
+
+                content.appendChild(subList);
+            });
+        }
+
+        function closePanel() {
+            const panel = document.getElementById("data-panel");
+            panel.style.display = "none";
+            panel.classList.remove("active"); // Hapus status active
+        }
+
+        function togglePieChart(checkbox, label) {
+            console.log("Checkbox diklik untuk:", label, "Checked:", checkbox.checked);
+
+            const chartOverlay = document.getElementById("chart-overlay");
+
+            if (checkbox.checked) {
+                chartOverlay.style.display = "block";
+
+                const ctx = document.getElementById('pie-chart').getContext('2d');
+                if (myPieChart) {
+                    myPieChart.destroy();
+                }
+
+                const values = JSON.parse(checkbox.dataset.values);
+
+                console.log("Menampilkan chart dengan data:", values);
+
+                myPieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['ASN', 'Non ASN'],
+                        datasets: [{
+                            label: label,
+                            data: [values["ASN"], values["Non ASN"]],
+                            backgroundColor: ['#FF6384', '#36A2EB'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: label
+                            }
+                        }
+                    }
+                });
+            } else {
+                closeChart();
+            }
+        }
+
+        function closeChart() {
+            document.getElementById("chart-overlay").style.display = "none";
+            if (myPieChart) {
+                myPieChart.destroy();
+            }
+        }
+    </script>
+
+
 
 </html>
