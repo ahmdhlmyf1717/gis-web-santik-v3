@@ -6,58 +6,107 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <!-- Card 1 -->
-                <div class="bg-white p-6 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold">Total Admin</h3>
-                        <p class="text-2xl font-bold">{{ $totalAdmins ?? 10 }}</p>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <!-- Kartu Statistik -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @php
+                    $cards = [
+                        ['label' => 'Total Admin', 'value' => $totalAdmins ?? 10, 'icon' => 'fas fa-user-cog'],
+                        ['label' => 'Total Dataset', 'value' => $totalDatasets ?? 25, 'icon' => 'fas fa-database'],
+                        ['label' => 'Total Maps', 'value' => $totalMaps ?? 15, 'icon' => 'fas fa-map-marked-alt'],
+                    ];
+                @endphp
+                @foreach ($cards as $card)
+                    <div
+                        class="bg-white p-6 shadow-lg rounded-lg flex items-center justify-between transition-all duration-200 hover:shadow-xl border-l-8 border-green-500">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">{{ $card['label'] }}</h3>
+                            <p class="text-3xl font-bold text-green-600">{{ $card['value'] }}</p>
+                        </div>
+                        <i class="{{ $card['icon'] }} text-green-500 text-4xl"></i>
                     </div>
-                    <i class="fas fa-user-cog text-gray-500 text-3xl"></i>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-white p-6 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold">Total Dataset</h3>
-                        <p class="text-2xl font-bold">{{ $totalDatasets ?? 25 }}</p>
-                    </div>
-                    <i class="fas fa-database text-gray-500 text-3xl"></i>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-white p-6 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold">Total Maps</h3>
-                        <p class="text-2xl font-bold">{{ $totalMaps ?? 15 }}</p>
-                    </div>
-                    <i class="fas fa-map-marked-alt text-gray-500 text-3xl"></i>
-                </div>
+                @endforeach
             </div>
 
+            <!-- Grafik Statistik -->
+            <div class="bg-white p-6 shadow-lg rounded-lg transition-all duration-200 hover:shadow-xl">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Statistik Data</h3>
+                <canvas id="dashboardChart"></canvas>
+            </div>
 
+            <!-- Aktivitas Terbaru dan Data Terbaru -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 shadow-lg rounded-lg transition-all duration-200 hover:shadow-xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h3>
+                    <ul class="divide-y divide-gray-200">
+                        <li class="py-2 text-gray-700">Admin A menambahkan dataset baru</li>
+                        <li class="py-2 text-gray-700">Admin B menghapus data lama</li>
+                        <li class="py-2 text-gray-700">Admin C memperbarui peta interaktif</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 shadow-lg rounded-lg transition-all duration-200 hover:shadow-xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Data Terbaru</h3>
+                    <table class="w-full border-collapse border border-gray-200 text-sm">
+                        <thead>
+                            <tr class="bg-green-500 text-white">
+                                <th class="py-2 px-3 border">Nama</th>
+                                <th class="py-2 px-3 border">Kategori</th>
+                                <th class="py-2 px-3 border">Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center border-b border-gray-200">
+                                <td class="py-2 px-3">Dataset 1</td>
+                                <td class="py-2 px-3">Puskesmas</td>
+                                <td class="py-2 px-3">-</td>
+                            </tr>
+                            <tr class="text-center border-b border-gray-200">
+                                <td class="py-2 px-3">Dataset 2</td>
+                                <td class="py-2 px-3">Cagar Alam</td>
+                                <td class="py-2 px-3">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let currentIndex = 0;
-            const slides = document.querySelectorAll(".slider-item");
-            const totalSlides = slides.length;
-
-            function showSlide(index) {
-                slides.forEach((slide, i) => {
-                    slide.style.display = i === index ? "block" : "none";
-                });
-            }
-
-            function nextSlide() {
-                currentIndex = (currentIndex + 1) % totalSlides;
-                showSlide(currentIndex);
-            }
-
-            showSlide(currentIndex);
-            setInterval(nextSlide, 3000); // Ganti slide tiap 3 detik
+            const ctx = document.getElementById('dashboardChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Admin', 'Dataset', 'Maps'],
+                    datasets: [{
+                        label: 'Jumlah',
+                        data: [{{ $totalAdmins ?? 10 }}, {{ $totalDatasets ?? 25 }},
+                            {{ $totalMaps ?? 15 }}
+                        ],
+                        backgroundColor: ['#66bb6a', '#ffd54f', '#42a5f5']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         });
     </script>
 </x-app-layout>

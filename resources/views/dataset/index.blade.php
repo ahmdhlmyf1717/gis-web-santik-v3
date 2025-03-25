@@ -13,7 +13,12 @@
 
                 <!-- Tombol Tambah Dataset -->
                 <a href="{{ route('dataset.create') }}"
-                    class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Tambah</a>
+                    class="text-white px-3 py-1.5 rounded-md inline-block text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105 mb-2"
+                    style="background: linear-gradient(135deg, rgba(61, 172, 20, 0.95), rgba(34, 112, 10, 0.9));">
+                    Tambah
+                </a>
+
+
 
                 <!-- Notifikasi SweetAlert -->
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -31,82 +36,89 @@
 
                 <div class="overflow-x-auto min-h-[300px]">
                     <!-- Tabel Daftar Dataset -->
-                    <table class="min-w-full bg-white border border-gray-300 text-xs">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-700 text-center">
-                                <th class="py-2 px-3 border" rowspan="2">Nama Puskesmas</th>
-                                <th class="py-2 px-3 border" colspan="2">Dokter</th>
-                                <th class="py-2 px-3 border" colspan="2">Perawat</th>
-                                <th class="py-2 px-3 border" colspan="2">Bidan</th>
-                                <th class="py-2 px-3 border" colspan="2">Sanitarian</th>
-                                <th class="py-2 px-3 border" colspan="2">Ahli Gizi</th>
-                                <th class="py-2 px-3 border" colspan="2">Tenaga</th>
-                                <th class="py-2 px-3 border" colspan="2">Non-Tenaga</th>
-                                <th class="py-2 px-3 border" rowspan="2">Aksi</th>
-                            </tr>
-                            <tr class="bg-gray-50 text-gray-700 text-center">
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                                <th class="py-1 px-2 border">ASN</th>
-                                <th class="py-1 px-2 border">Non-ASN</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($datasets as $dataset)
-                                <tr class="text-center border-b">
-                                    <td class="py-2 px-3 border font-semibold">{{ $dataset->nama_puskesmas }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->dokter_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->dokter_non_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->perawat_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->perawat_non_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->bidan_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->bidan_non_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->sanitarian_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->sanitarian_non_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->ahli_gizi_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->ahli_gizi_non_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->tenaga_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->tenaga_non_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->non_tenaga_asn }}</td>
-                                    <td class="py-2 px-3 border">{{ $dataset->non_tenaga_non_asn }}</td>
-                                    <td class="py-1 px-1 border text-center">
-                                        <div class="flex items-center justify-center space-x-0.5">
-                                            <!-- Tombol Edit -->
-                                            <a href="{{ route('dataset.edit', $dataset->id) }}"
-                                                class="bg-yellow-500 text-white flex items-center justify-center w-5 h-5 rounded-sm hover:bg-yellow-600 transition text-[10px] p-0.5">
-                                                <i class="bi bi-pencil-square text-[10px]"></i>
-                                            </a>
-
-                                            <!-- Tombol Hapus -->
-                                            <form action="{{ route('dataset.destroy', $dataset->id) }}" method="POST"
-                                                class="m-0 p-0 delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                    class="bg-red-500 text-white flex items-center justify-center w-5 h-5 rounded-sm hover:bg-red-600 transition text-[10px] p-0.5 delete-btn">
-                                                    <i class="bi bi-trash text-[10px]"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-
-
-
+                    <div class="overflow-x-auto min-h-[300px]">
+                        <table
+                            class="min-w-full bg-white border border-gray-300 text-sm shadow-md rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100 text-gray-700 text-center">
+                                <tr>
+                                    <th class="py-3 px-4 border" rowspan="2">Nama Puskesmas</th>
+                                    <th class="py-3 px-4 border" colspan="2">Dokter</th>
+                                    <th class="py-3 px-4 border" colspan="2">Perawat</th>
+                                    <th class="py-3 px-4 border" colspan="2">Bidan</th>
+                                    <th class="py-3 px-4 border" colspan="2">Sanitarian</th>
+                                    <th class="py-3 px-4 border" colspan="2">Ahli Gizi</th>
+                                    <th class="py-3 px-4 border" colspan="2">Tenaga</th>
+                                    <th class="py-3 px-4 border" colspan="2">Non-Tenaga</th>
+                                    <th class="py-3 px-4 border w-20" rowspan="2">Aksi</th>
                                 </tr>
-                            @endforeach
+                                <tr class="bg-gray-100 text-gray-700">
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                    <th class="py-2 px-3 border">ASN</th>
+                                    <th class="py-2 px-3 border">Non-ASN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($datasets as $dataset)
+                                    <tr class="border-b hover:bg-gray-100 transition text-center">
+                                        <td class="py-3 px-4 border font-semibold text-gray-800">
+                                            {{ $dataset->nama_puskesmas }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->dokter_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->dokter_non_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->perawat_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->perawat_non_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->bidan_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->bidan_non_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->sanitarian_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->sanitarian_non_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->ahli_gizi_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->ahli_gizi_non_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->tenaga_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->tenaga_non_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->non_tenaga_asn }}</td>
+                                        <td class="py-3 px-4 border">{{ $dataset->non_tenaga_non_asn }}</td>
+                                        <td class="py-3 px-4 border">
+                                            <div class="flex items-center justify-center space-x-0.5">
+                                                <!-- Tombol Edit -->
+                                                <a href="{{ route('dataset.edit', $dataset->id) }}"
+                                                    class="bg-yellow-500 text-white flex items-center justify-center w-5 h-5 rounded-sm hover:bg-yellow-600 transition text-[10px] p-0.5">
+                                                    <i class="bi bi-pencil-square text-[10px]"></i>
+                                                </a>
 
-                        </tbody>
-                    </table>
+                                                <!-- Tombol Hapus -->
+                                                <form action="{{ route('dataset.destroy', $dataset->id) }}"
+                                                    method="POST" class="m-0 p-0 delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button"
+                                                        class="bg-red-500 text-white flex items-center justify-center w-5 h-5 rounded-sm hover:bg-red-600 transition text-[10px] p-0.5 delete-btn">
+                                                        <i class="bi bi-trash text-[10px]"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            @if ($datasets->isEmpty())
+                                <tr>
+                                    <td colspan="17" class="text-center text-gray-500 font-semibold py-6">Belum ada
+                                        data puskesmas.</td>
+                                </tr>
+                            @endif
+                        </table>
+                    </div>
+
                 </div>
                 <div class="mt-4">
                     {{ $datasets->links('pagination::bootstrap-4') }}
@@ -141,15 +153,15 @@
         <
         script >
             document.addEventListener("DOMContentLoaded", function() {
-                const content = document.getElementById("dataset-container"); // Ganti dengan ID container tabel kamu
+                const content = document.getElementById("dataset-container");
                 const paginationLinks = document.querySelectorAll(".pagination a");
 
                 paginationLinks.forEach(link => {
                     link.addEventListener("click", function(e) {
-                        e.preventDefault(); // Hindari reload langsung
+                        e.preventDefault();
                         const url = this.href;
 
-                        content.classList.add("fade-out"); // Tambah efek fade-out
+                        content.classList.add("fade-out");
 
                         fetch(url, {
                                 headers: {
@@ -199,13 +211,15 @@
         }
 
         .pagination li a:hover {
-            background-color: #007bff;
+            background: linear-gradient(135deg, rgba(61, 172, 20, 0.95), rgba(34, 112, 10, 0.9));
+            font-weight: bold;
             color: white;
             transform: scale(1.1);
         }
 
         .pagination .active span {
-            background-color: #007bff;
+            background: linear-gradient(135deg, rgba(61, 172, 20, 0.95), rgba(34, 112, 10, 0.9));
+            font-weight: bold;
             color: white;
             font-weight: bold;
         }

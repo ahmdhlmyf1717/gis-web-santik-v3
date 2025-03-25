@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Admin Dashboard
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    // Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 });
 
 // Route::get('/register', function () {
@@ -55,5 +55,18 @@ Route::fallback(function () {
     return response()->view('errors.404', [], 404);
 });
 
+use App\Http\Controllers\CagarAlamController;
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cagar-alam', [CagarAlamController::class, 'index'])->name('cagar-alam.index');
+    Route::get('/cagar-alam/create', [CagarAlamController::class, 'create'])->name('cagar-alam.create');
+    Route::post('/cagar-alam', [CagarAlamController::class, 'store'])->name('cagar-alam.store');
+    Route::get('/cagar-alam/{id}/edit', [CagarAlamController::class, 'edit'])->name('cagar-alam.edit');
+    Route::put('/cagar-alam/{id}', [CagarAlamController::class, 'update'])->name('cagar-alam.update');
+    Route::delete('/cagar-alam/{id}', [CagarAlamController::class, 'destroy'])->name('cagar-alam.destroy');
+});
+
+Route::get('/api/cagar-alam/{nama}', [CagarAlamController::class, 'getByNama']);
 // Load authentication routes
 require __DIR__ . '/auth.php';

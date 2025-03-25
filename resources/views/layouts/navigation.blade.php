@@ -11,6 +11,7 @@
                 </div>
 
                 <!-- Navigation Links -->
+                <!-- Navigation Links -->
                 <div class="hidden sm:flex sm:items-center sm:space-x-8 sm:ms-10">
                     <!-- Dashboard Link -->
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -19,18 +20,37 @@
 
                     <!-- Dataset Dropdown -->
                     <div class="relative">
-                        <x-nav-link href="#" class="cursor-pointer" id="datasetDropdown">
-                            {{ __('Dataset') }}
+                        <x-nav-link href="#" class="cursor-pointer" id="datasetDropdown" :active="request()->routeIs('dataset.*')">
+                            {{ __('Puskesmas') }}
                         </x-nav-link>
+
 
                         <!-- Dropdown Content -->
                         <div id="datasetMenu"
                             class="absolute z-50 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
                             <x-dropdown-link :href="route('dataset.index')">
-                                {{ __('View Datasets') }}
+                                {{ __('Lihat Data Puskesmas') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('dataset.create')">
-                                {{ __('Add New Dataset') }}
+                                {{ __('Tambah Data') }}
+                            </x-dropdown-link>
+                        </div>
+                    </div>
+
+                    <!-- Cagar Alam Dropdown -->
+                    <div class="relative">
+                        <x-nav-link href="#" class="cursor-pointer" id="cagarAlamDropdown" :active="request()->routeIs('cagar-alam.*')">
+                            {{ __('Cagar Alam') }}
+                        </x-nav-link>
+
+                        <!-- Dropdown Content -->
+                        <div id="cagarAlamMenu"
+                            class="absolute z-50 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                            <x-dropdown-link :href="route('cagar-alam.index')">
+                                {{ __('Lihat Data Cagar Alam') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('cagar-alam.create')">
+                                {{ __('Tambah Data') }}
                             </x-dropdown-link>
                         </div>
                     </div>
@@ -38,21 +58,38 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        const dropdownBtn = document.getElementById('datasetDropdown');
-                        const dropdownMenu = document.getElementById('datasetMenu');
+                        // Dataset dropdown
+                        const datasetDropdownBtn = document.getElementById('datasetDropdown');
+                        const datasetDropdownMenu = document.getElementById('datasetMenu');
 
-                        dropdownBtn.addEventListener('click', function(event) {
+                        datasetDropdownBtn.addEventListener('click', function(event) {
                             event.preventDefault();
-                            dropdownMenu.classList.toggle('hidden');
+                            datasetDropdownMenu.classList.toggle('hidden');
                         });
 
+                        // Cagar Alam dropdown
+                        const cagarAlamDropdownBtn = document.getElementById('cagarAlamDropdown');
+                        const cagarAlamDropdownMenu = document.getElementById('cagarAlamMenu');
+
+                        cagarAlamDropdownBtn.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            cagarAlamDropdownMenu.classList.toggle('hidden');
+                        });
+
+                        // Close dropdown if clicked outside
                         document.addEventListener('click', function(event) {
-                            if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                                dropdownMenu.classList.add('hidden');
+                            if (!datasetDropdownBtn.contains(event.target) && !datasetDropdownMenu.contains(event
+                                    .target)) {
+                                datasetDropdownMenu.classList.add('hidden');
+                            }
+                            if (!cagarAlamDropdownBtn.contains(event.target) && !cagarAlamDropdownMenu.contains(event
+                                    .target)) {
+                                cagarAlamDropdownMenu.classList.add('hidden');
                             }
                         });
                     });
                 </script>
+
 
 
 

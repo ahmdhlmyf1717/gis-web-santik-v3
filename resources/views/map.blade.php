@@ -987,6 +987,21 @@
                                     }
                                 }
 
+                                // Tambahkan untuk Cagar Alam
+                                if (geojsonPath.toLowerCase().includes("persebaran titik cagar alam")) {
+                                    const popupContent = generatePopupContent(feature.properties);
+                                    layer.bindPopup(popupContent);
+
+                                    layer.on("click", function() {
+                                        layer.openPopup();
+                                        openDataPanelCagarAlam(feature.properties
+                                            .namcb);
+                                    });
+                                    if (legendContainer) {
+                                        legendContainer.style.display = "none";
+                                    }
+                                }
+
                                 if (typeof onEachFeature === "function") {
                                     onEachFeature(feature, layer, geojsonPath);
                                 }
@@ -1033,6 +1048,7 @@
 
 
 
+
         function generatePopupContent(properties) {
             let content = "<table style='width:100%; border-collapse:collapse;'><tbody>";
 
@@ -1064,9 +1080,29 @@
             Lihat Selengkapnya
         </button>`;
             }
+            if (properties.namcb) { // Untuk Cagar Alam
+                content += `<button onclick="openDataPanelCagarAlam('${properties.namcb}')"
+        style="
+            display: block;
+            margin: 10px 0 0 auto;
+            padding: 6px 12px;
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+            color: white;
+            border: none;
+            border-radius: 2px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        "
+        onmouseover="this.style.background='linear-gradient(90deg, #43A047, #5DAE60)'"
+        onmouseout="this.style.background='linear-gradient(90deg, #4CAF50, #66BB6A)'">
+        Lihat Selengkapnya
+        </button>`;
+            }
 
             return content;
         }
+
 
 
         let puskesmasChartInstance = null;
@@ -1183,15 +1219,56 @@
                 });
         }
 
+        function openDataPanelCagarAlam(namaCagarAlam) {
+            const panel = document.getElementById("data-panel");
+            const title = document.getElementById("panel-title");
+            const content = document.getElementById("data-content");
+            const chartCanvas = document.getElementById("puskesmasChart");
 
+            title.innerText = "Loading...";
+            content.innerHTML = "";
+
+            if (chartCanvas) {
+                chartCanvas.style.display = "none";
+            }
+
+            fetch(`/api/cagar-alam/${encodeURIComponent(namaCagarAlam)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Data tidak ditemukan");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    title.innerText = data.nama;
+                    title.style.textAlign = "center";
+
+                    content.innerHTML = `
+                <img src="/storage/${data.foto}" alt="${data.nama}" 
+                     style="width:100%; max-height:200px; object-fit:cover; 
+                     border-radius: 8px; margin-bottom: 10px;">
+                <p style="text-align: justify;">${data.deskripsi}</p> <!-- Deskripsi rata kanan -->
+            `;
+
+                    panel.style.display = "block";
+                    panel.style.right = "10px";
+                    panel.classList.add("active");
+
+                    setTimeout(() => {
+                        document.addEventListener("click", closePanelOnOutsideClick);
+                    }, 100);
+                })
+                .catch(error => {
+                    title.innerText = "Error";
+                    content.innerHTML = `<p style="color:red; text-align:center;">${error.message}</p>`;
+                });
+        }
 
 
         function closePanel() {
             const panel = document.getElementById("data-panel");
             panel.style.display = "none";
         }
-
-
 
         function loadGeoJSONSidebar(folderPath, imageFolderPath) {
             fetch(`${folderPath}/list-files.php`)
