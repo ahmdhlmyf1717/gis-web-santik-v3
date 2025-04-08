@@ -22,20 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Admin Dashboard
-    // Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 });
-
-// Route::get('/register', function () {
-//     return redirect('/login');
-// })->name('register');
-
-// Route::post('/register', function () {
-//     return redirect('/login');
-// });
-
-
 
 // Dataset Routes
 Route::middleware('auth')->group(function () {

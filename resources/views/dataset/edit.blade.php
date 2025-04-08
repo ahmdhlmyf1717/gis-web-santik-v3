@@ -1,72 +1,72 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit') }}
-        </h2>
-    </x-slot>
+@include('layouts.navigation')
+@include('partials.loading')
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <form action="{{ route('dataset.update', $dataset->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
+@section('title', 'Edit Data Puskesmas')
 
-                    <div class="mb-2">
-                        <label class="block text-gray-700">Nama Puskesmas</label>
-                        <input type="text" name="nama_puskesmas"
-                            value="{{ old('nama_puskesmas', $dataset->nama_puskesmas) }}"
-                            class="border rounded p-2 w-full">
-                        @error('nama_puskesmas')
-                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                        @enderror
-                    </div>
+@section('header')
+    {{ __('Edit Data Puskesmas') }}
+@endsection
 
-                    <h3 class="text-lg font-semibold mt-4 mb-2">Jumlah Tenaga Kesehatan</h3>
+@section('content')
+    <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg p-6 border border-gray-200">
+        <form action="{{ route('dataset.update', $dataset->id) }}" method="POST" class="space-y-6">
+            @csrf
+            @method('PUT')
 
-                    @php
-                        $fields = [
-                            'dokter' => 'Dokter',
-                            'perawat' => 'Perawat',
-                            'bidan' => 'Bidan',
-                            'sanitarian' => 'Sanitarian',
-                            'ahli_gizi' => 'Ahli Gizi',
-                            'tenaga' => 'Tenaga Kesehatan Lainnya',
-                            'non_tenaga' => 'Non Tenaga Kesehatan',
-                        ];
-                    @endphp
-
-                    @foreach ($fields as $key => $label)
-                        <div class="mb-2">
-                            <label class="block text-gray-700">Jumlah {{ $label }}</label>
-                            <div class="flex space-x-4">
-                                <input type="number" name="{{ $key }}_asn"
-                                    value="{{ old($key . '_asn', $dataset[$key . '_asn']) }}"
-                                    class="border rounded p-2 w-1/2" placeholder="ASN">
-                                <input type="number" name="{{ $key }}_non_asn"
-                                    value="{{ old($key . '_non_asn', $dataset[$key . '_non_asn']) }}"
-                                    class="border rounded p-2 w-1/2" placeholder="Non ASN">
-                            </div>
-                            @error($key . '_asn')
-                                <p class="text-red-500 text-sm">{{ $message }}</p>
-                            @enderror
-                            @error($key . '_non_asn')
-                                <p class="text-red-500 text-sm">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    @endforeach
-
-                    <div class="flex space-x-4 mt-4">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-                            Update
-                        </button>
-                        <a href="{{ route('dataset.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded">
-                            Kembali
-                        </a>
-                    </div>
-                </form>
-
+            <!-- Nama Puskesmas -->
+            <div>
+                <label for="nama_puskesmas" class="block text-sm font-medium text-gray-700 mb-1">Nama Puskesmas</label>
+                <input type="text" id="nama_puskesmas" name="nama_puskesmas"
+                    value="{{ old('nama_puskesmas', $dataset->nama_puskesmas) }}"
+                    class="border border-gray-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                @error('nama_puskesmas')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
+
+            <!-- Input Tenaga Kesehatan -->
+            <h3 class="text-lg font-semibold mt-4 mb-2 text-green-700">Jumlah Tenaga Kesehatan</h3>
+
+            @php
+                $fields = [
+                    'dokter' => 'Dokter',
+                    'perawat' => 'Perawat',
+                    'bidan' => 'Bidan',
+                    'sanitarian' => 'Sanitarian',
+                    'ahli_gizi' => 'Ahli Gizi',
+                    'tenaga' => 'Tenaga Kesehatan Lainnya',
+                    'non_tenaga' => 'Non Tenaga Kesehatan',
+                ];
+            @endphp
+
+            @foreach ($fields as $key => $label)
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah {{ $label }}</label>
+                    <div class="flex space-x-4">
+                        <input type="number" name="{{ $key }}_asn" placeholder="ASN"
+                            value="{{ old($key . '_asn', $dataset[$key . '_asn']) }}"
+                            class="border border-gray-300 rounded-lg p-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <input type="number" name="{{ $key }}_non_asn" placeholder="Non ASN"
+                            value="{{ old($key . '_non_asn', $dataset[$key . '_non_asn']) }}"
+                            class="border border-gray-300 rounded-lg p-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    @error($key . '_asn')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                    @error($key . '_non_asn')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            @endforeach
+
+            <!-- Tombol Update & Kembali -->
+            <div class="flex space-x-4 mt-6">
+                <button type="submit"
+                    class="bg-green-600 text-white px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 hover:bg-green-700 font-semibold">Update</button>
+                <a href="{{ route('dataset.index') }}"
+                    class="bg-gray-500 text-white px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 hover:bg-gray-600 font-semibold">Kembali</a>
+            </div>
+        </form>
     </div>
-</x-app-layout>
+@endsection

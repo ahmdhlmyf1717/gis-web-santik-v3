@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+@include('partials.loading')
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1120,15 +1122,17 @@
             const panel = document.getElementById("data-panel");
             const title = document.getElementById("panel-title");
             const content = document.getElementById("data-content");
+            const chartCanvas = document.getElementById("puskesmasChart");
 
-            title.innerText = "";
+            // Tampilkan canvas chart untuk puskesmas
+            if (chartCanvas) chartCanvas.style.display = "block";
+
+            title.innerText = "Loading...";
             content.innerHTML = "";
 
             fetch(`/api/puskesmas/${encodeURIComponent(namaPuskesmas)}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Data tidak ditemukan");
-                    }
+                    if (!response.ok) throw new Error("Data tidak ditemukan");
                     return response.json();
                 })
                 .then(data => {
@@ -1138,17 +1142,14 @@
                     const chartLabels = [];
                     const chartData = [];
                     const chartColors = [];
-
                     const colors = [
                         "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
                         "#FF9F40", "#FFCD56", "#C9CBCF", "#7FC97F", "#D95F02"
                     ];
-
                     let colorIndex = 0;
 
                     for (const [category, values] of Object.entries(data.data)) {
                         content.innerHTML += `<h4 class="font-medium mt-4">${category}</h4>`;
-
                         for (const [type, amount] of Object.entries(values)) {
                             content.innerHTML += `<li>${type}: <strong>${amount}</strong></li>`;
                             chartLabels.push(`${category} - ${type}`);
@@ -1156,16 +1157,12 @@
                             chartColors.push(colors[colorIndex % colors.length]);
                             colorIndex++;
                         }
-
                         content.innerHTML += "</ul>";
                     }
 
-                    if (puskesmasChartInstance) {
-                        puskesmasChartInstance.destroy();
-                    }
-
-                    const ctx = document.getElementById("puskesmasChart").getContext("2d");
-
+                    // Update chart
+                    if (puskesmasChartInstance) puskesmasChartInstance.destroy();
+                    const ctx = chartCanvas.getContext("2d");
                     puskesmasChartInstance = new Chart(ctx, {
                         type: "pie",
                         data: {
@@ -1189,14 +1186,6 @@
                                             size: 8
                                         }
                                     }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            const label = context.label || '';
-                                            return `${label}: ${context.parsed}`;
-                                        }
-                                    }
                                 }
                             },
                             animation: {
@@ -1206,17 +1195,15 @@
                         }
                     });
 
+                    // Tampilkan panel
                     panel.style.display = "block";
                     panel.style.right = "10px";
                     panel.classList.add("active");
-
                     setTimeout(() => {
                         document.addEventListener("click", closePanelOnOutsideClick);
                     }, 100);
                 })
-                .catch(error => {
-                    alert(error.message);
-                });
+                .catch(error => alert(error.message));
         }
 
         function openDataPanelCagarAlam(namaCagarAlam) {
@@ -1228,15 +1215,12 @@
             title.innerText = "Loading...";
             content.innerHTML = "";
 
-            if (chartCanvas) {
-                chartCanvas.style.display = "none";
-            }
+            // Sembunyikan canvas chart untuk cagar alam
+            if (chartCanvas) chartCanvas.style.display = "none";
 
             fetch(`/api/cagar-alam/${encodeURIComponent(namaCagarAlam)}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Data tidak ditemukan");
-                    }
+                    if (!response.ok) throw new Error("Data tidak ditemukan");
                     return response.json();
                 })
                 .then(data => {
@@ -1247,9 +1231,10 @@
                 <img src="/storage/${data.foto}" alt="${data.nama}" 
                      style="width:100%; max-height:200px; object-fit:cover; 
                      border-radius: 8px; margin-bottom: 10px;">
-                <p style="text-align: justify;">${data.deskripsi}</p> <!-- Deskripsi rata kanan -->
+                <p style="text-align: justify;">${data.deskripsi}</p>
             `;
 
+                    // Tampilkan panel
                     panel.style.display = "block";
                     panel.style.right = "10px";
                     panel.classList.add("active");
@@ -1263,6 +1248,8 @@
                     content.innerHTML = `<p style="color:red; text-align:center;">${error.message}</p>`;
                 });
         }
+
+
 
 
         function closePanel() {
